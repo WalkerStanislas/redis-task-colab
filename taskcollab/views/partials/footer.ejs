@@ -1,0 +1,24 @@
+</div> <!-- Fin du container main-content -->
+
+<!-- Zone de notification -->
+<div id="notification-area"></div>
+
+<footer>
+    <div class="container">
+        <p>TaskCollab - Projet NoSQL avec Redis &copy; <%= new Date().getFullYear() %></p>
+        <div class="footer-links">
+            <a href="/about">À propos</a>
+            <a href="/contact">Contact</a>
+            <a href="/legal">Mentions légales</a>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<% if (locals.pageScripts) { %>
+    <% pageScripts.forEach(script => { %>
+        <script src="<%= script %>"></script>
+    <% }); %>
+<% } %>
+</body>
+</html>

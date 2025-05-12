@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskCollab - Gestion des tâches collaboratives</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <header>
+        <h1>TaskCollab</h1>
+        <p>Système de gestion des tâches collaboratives avec Redis</p>
+    </header>
+
+    <main>
+        <section class="task-form">
+            <h2>Nouvelle tâche</h2>
+            <form id="new-task-form">
+                <div class="form-group">
+                    <label for="title">Titre</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="assignedTo">Assigner à</label>
+                    <select id="assignedTo" name="assignedTo">
+                        <option value="">Non assignée</option>
+                        <% users.forEach(user => { %>
+                            <option value="<%= user.id %>"><%= user.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                
+                <button type="submit">Créer</button>
+            </form>
+        </section>
+
+        <section class="tasks">
+            <div class="task-filters">
+                <h2>Filtres</h2>
+                <div class="filter-group">
+                    <label>Par utilisateur</label>
+                    <select id="filter-user">
+                        <option value="">Tous les utilisateurs</option>
+                        <% users.forEach(user => { %>
+                            <option value="<%= user.id %>"><%= user.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Par statut</label>
+                    <select id="filter-status">
+                        <option value="">Tous les statuts</option>
+                        <option value="pending">En attente</option>
+                        <option value="in-progress">En cours</option>
+                        <option value="completed">Terminée</option>
+                    </select>
+                </div>
+            </div>
+
+            <h2>Liste des tâches</h2>
+            <div class="task-list" id="task-list">
+                <% if (tasks && tasks.length > 0) { %>
+                    <% tasks.forEach(task => { %>
+                        <div class="task-card" data-id="<%= task.id %>" data-user="<%= task.assignedTo %>" data-status="<%= task.status %>">
+                            <h3><%= task.title %></h3>
+                            <p class="task-description"><%= task.description %></p>
+                            
+                            <div class="task-meta">
+                                <div class="task-assignee">
+                                    <strong>Assignée à:</strong>
+                                    <span>
+                                    <% if (task.assignedTo) { %>
+                                        <% const user = users.find(u => u.id === task.assignedTo); %>
+                                        <%= user ? user.name : 'Utilisateur inconnu' %>
+                                    <% } else { %>
+                                        Non assignée
+                                    <% } %>
+                                    </span>
+                                </div>
+                                
+                                <div class="task-status">
+                                    <strong>Statut:</strong>
+                                    <span class="status-badge <%= task.status %>">
+                                        <% if (task.status === 'pending') { %>
+                                            En attente
+                                        <% } else if (task.status === 'in-progress') { %>
+                                            En cours
+                                        <% } else if (task.status === 'completed') { %>
+                                            Terminée
+                                        <% } %>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="task-actions">
+                                <button class="btn-update" data-id="<%= task.id %>">Modifier</button>
+                                <button class="btn-delete" data-id="<%= task.id %>">Supprimer</button>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="no-tasks">Aucune tâche disponible.</p>
+                <% } %>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal pour modifier une tâche -->
+    <div id="update-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Modifier la tâche</h2>
+            <form id="update-task-form">
+                <input type="hidden" id="update-id">
+                
+                <div class="form-group">
+                    <label for="update-title">Titre</label>
+                    <input type="text" id="update-title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="update-description">Description</label>
+                    <textarea id="update-description" name="description"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="update-status">Statut</label>
+                    <select id="update-status" name="status">
+                        <option value="pending">En attente</option>
+                        <option value="in-progress">En cours</option>
+                        <option value="completed">Terminée</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="update-assignedTo">Assigner à</label>
+                    <select id="update-assignedTo" name="assignedTo">
+                        <option value="">Non assignée</option>
+                        <% users.forEach(user => { %>
+                            <option value="<%= user.id %>"><%= user.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                
+                <button type="submit">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Zone de notification -->
+    <div id="notification-area"></div>
+
+    <footer>
+        <p>TaskCollab - Projet NoSQL avec Redis</p>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

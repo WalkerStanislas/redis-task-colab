@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %> - TaskCollab</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <% if (locals.extraScripts) { %>
+        <% extraScripts.forEach(script => { %>
+            <script src="<%= script %>"></script>
+        <% }); %>
+    <% } %>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="/">TaskCollab</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">Accueil</a></li>
+                    <li><a href="/tasks">Tâches</a></li>
+                    <% if (locals.user) { %>
+                        <li><a href="/profile">Profil</a></li>
+                        <li><a href="/logout">Déconnexion</a></li>
+                    <% } else { %>
+                        <li><a href="/login">Connexion</a></li>
+                        <li><a href="/register">Inscription</a></li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+        <div class="header-description">
+            <p>Système de gestion des tâches collaboratives avec Redis</p>
+        </div>
+    </header>
+
+    <div class="container main-content">
+        <% if (locals.messages && messages.length > 0) { %>
+            <div class="messages">
+                <% messages.forEach(message => { %>
+                    <div class="message <%= message.type %>">
+                        <%= message.text %>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
